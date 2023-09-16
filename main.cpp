@@ -17,16 +17,17 @@ public:
 		op = opr;
 	}
 
+	Scalar(const Scalar& S) {
+		value = S.value;
+		child[0] = S.child[0]; 
+		child[1] = S.child[1];
+		op = S.op;
+	}
+
 	Scalar operator +(Scalar& other) {
 		Scalar out(value + other.value, value, other.value, '+');
 		grad = 1;
 		return out;
-	}
-
-	Scalar(const Scalar& S) {
-		value = S.value;
-		child[0] = S.child[0]; child[1] = S.child[1];
-		op = S.op;
 	}
 
 	Scalar operator *(Scalar& other) {
@@ -57,16 +58,16 @@ public:
 			other.grad += this.data * out.grad;
 		}
 		if (this->op == '^') {
-			//power
+			//TODO 1 - implement backwards function for power operations
 		}
 	}
 
 	void Backward() {
-		//topo sort
+		//TODO 2 - implement topo sort algo
 
 		this.grad = 1;
 		for (auto node : /*topoSortResult*/)
-			node.OperatorBackward();
+			node.OperatorBackward();	//TODO 3 - find solution for calling other and out from here
 	}
 
 
