@@ -1,11 +1,15 @@
 #include <iostream>
 #include <cstring>
+#include <math.h>
+#include <functional>
 
 using namespace std;
 
 class Scalar {
 private:
+
 	double value;
+	function<void()> _backwards; 
 	double grad = 0;
 	Scalar child[2];
 	char op;
@@ -27,6 +31,11 @@ public:
 	Scalar operator +(Scalar& other) {
 		Scalar out(value + other.value, value, other.value, '+');
 		grad = 1;
+		out._backwards[this,other,out]{
+			this->grad += out.grad;
+			other.grad += out.grad;
+			 
+		}
 		return out;
 	}
 
@@ -42,11 +51,9 @@ public:
 		return out;
 	}
 
-	/*Scalar operator -(Scalar& other) {
-		Scalar out(value - other.value, value, other.value, '-');
-		grad = 1;
-		return out;
-	}*/
+	Scalar operator -(Scalar& other) {
+		return *this * -1;
+	}
 
 	Scalar OperatorBackward(Scalar& other, Scalar& out) {
 		if (this->op == '+') {
@@ -54,10 +61,11 @@ public:
 			other.grad += out.grad;
 		}
 		if (this->op == '*') {
-			this.grad += other.data * out.grad;
-			other.grad += this.data * out.grad;
+			this->grad += other.value * out.grad;
+			other.grad += this->value * out.grad;
 		}
 		if (this->op == '^') {
+			this->grad += (other * pow(this->value,(other.value-1)) * out.grad );
 			//TODO 1 - implement backwards function for power operations
 		}
 	}
@@ -65,7 +73,7 @@ public:
 	void Backward() {
 		//TODO 2 - implement topo sort algo
 
-		this.grad = 1;
+		this->grad = 1;
 		for (auto node : /*topoSortResult*/)
 			node.OperatorBackward();	//TODO 3 - find solution for calling other and out from here
 	}
