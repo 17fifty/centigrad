@@ -37,6 +37,7 @@ namespace autodiff
         {
             Scalar out(value + other.value, value, other.value, '+');
             grad = 1;
+            // ?
             out._backwards[this, other, out]
             {
                 this->grad += out.grad;
