@@ -10,6 +10,7 @@ namespace autodiff
     {
     private:
         double value;
+        //fix this 
         function<void()> _backwards;
         double grad = 0;
         Scalar child[2];
