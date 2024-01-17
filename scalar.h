@@ -43,7 +43,6 @@ namespace autodiff
             }
             return out;
         }
-
         Scalar operator*(Scalar &other)
         {
             Scalar out(value * other.value, value, other.value, '*');
