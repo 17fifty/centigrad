@@ -26,7 +26,7 @@ namespace autodiff
                 this->op = op;
             }
 
-            Scalar operator +(Scalar &other)
+            Scalar operator+(Scalar &other)
             {
                 Scalar set[]={*this, other};
                 Scalar out((value + other.value), set, '+');
@@ -41,7 +41,8 @@ namespace autodiff
 
             Scalar operator*(Scalar &other)
             {
-                Scalar out(value * other.value, value, other.value, '*');
+                Scalar set[]={*this, other};
+                Scalar out((value * other.value), set, '*');
                 grad = other.value;
                 other.grad = value;
                 return out;
@@ -49,41 +50,35 @@ namespace autodiff
 
             Scalar operator*(double x)
             {
-                Scalar out(value * x, value, x, '*');
+                Scalar out(value * x);
                 return out;
             }
-
-            Scalar operator-(Scalar &other)
-            {
-                return *this * -1;
+            friend Scalar operator*(const double& other, const Scalar& obj) {
+                Scalar result(other * obj.value);
+                return result;
             }
 
-            Scalar OperatorBackward(Scalar &other, Scalar &out)
-            {
-                if (this->op == '+')
-                {
-                    this->grad += out.grad;
-                    other.grad += out.grad;
-                }
-                if (this->op == '*')
-                {
-                    this->grad += other.value * out.grad;
-                    other.grad += this->value * out.grad;
-                }
-                if (this->op == '^')
-                {
-                    this->grad += (other.value * pow(this->value, (other.value - 1)) * out.grad);
-                    // TODO 1 - implement backwards function for power operations
-                }
+            Scalar operator-(){
+                Scalar result(-value);
+                return result;
             }
+            Scalar operator-(double num) {
+                Scalar result(value - num);
+                return result;
+            }
+            friend Scalar operator-(double num, const Scalar& obj) {
+                Scalar result(num - obj.value);
+                return result;
+            }
+
 
             void Backward()
             {
-                // TODO 2 - implement topo sort algo
+                // TODO - implement topo sort algo
 
                 this->grad = 1;
-                for (auto node : /*topoSortResult*/)
-                    node.OperatorBackward(); // TODO 3 - find solution for calling other and out from here
+                for (auto node : /*topoSortResult*/)//in reverse
+                    node._backwards();
             }
 
             void Print()
