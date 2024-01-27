@@ -14,22 +14,23 @@ namespace autodiff
         private:
             double value;
             double grad;
-            Scalar* children[2] = {};
+            vector<Scalar*> children = {};
             char op;
             function<void()> _backwards;
 
         public:
-            Scalar(double value, Scalar children[] = {}, char op=' ')
+            Scalar(double value, vector<Scalar*> children= {}, char op=' ')
             {
                 this->value = value;
                 this->grad = 0;
-                *this->children = children;
+                this->children = children;
                 this->op = op;
             }
 
             Scalar operator+(Scalar &other)
             {
-                Scalar set[]={*this, other};
+                Scalar* p = &other;
+                vector<Scalar*> set={this,p};
                 Scalar out((value + other.value), set, '+');
 
                 out._backwards =[this, &other, out]()
@@ -40,7 +41,8 @@ namespace autodiff
                 return out;
             }
             Scalar operator+(double num) {
-                return *this + Scalar(num);
+                Scalar v(num);
+                return *this + v;
             }
             friend Scalar operator+(double num, Scalar& obj) {
                 return Scalar(num)+ obj;
@@ -48,7 +50,8 @@ namespace autodiff
 
             Scalar operator*(Scalar &other)
             {
-                Scalar set[]={*this, other};
+                Scalar* p = &other;
+                vector<Scalar*> set={this,p};
                 Scalar out((value * other.value), set, '*');
 
                 out._backwards =[this, &other, out]()
