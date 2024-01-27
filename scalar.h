@@ -3,6 +3,8 @@
 #include <math.h>
 #include <functional>
 
+using namespace std;
+
 namespace autodiff
 {
 
@@ -12,7 +14,7 @@ namespace autodiff
         double value;
         //fix this 
         function<void()> _backwards;
-        double grad = 0;
+        double grad;
         Scalar child[2];
         char op;
 
@@ -37,12 +39,11 @@ namespace autodiff
         {
             Scalar out(value + other.value, value, other.value, '+');
             grad = 1;
-            // ?
-            out._backwards[this, other, out]
+            out._backwards =[this, &other, out]()
             {
                 this->grad += out.grad;
                 other.grad += out.grad;
-            }
+            };
             return out;
         }
         Scalar operator*(Scalar &other)
@@ -78,7 +79,7 @@ namespace autodiff
             }
             if (this->op == '^')
             {
-                this->grad += (other * pow(this->value, (other.value - 1)) * out.grad);
+                this->grad += (other.value * pow(this->value, (other.value - 1)) * out.grad);
                 // TODO 1 - implement backwards function for power operations
             }
         }

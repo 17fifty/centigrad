@@ -2,7 +2,7 @@
 #include <cstring>
 #include <math.h>
 #include <functional>
-#include <scalar.h> 
+#include "scalar.h"
 
 using namespace std;
 using namespace autodiff; 
