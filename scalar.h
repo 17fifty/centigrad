@@ -50,8 +50,12 @@ namespace autodiff
             {
                 Scalar set[]={*this, other};
                 Scalar out((value * other.value), set, '*');
-                grad = other.value;
-                other.grad = value;
+
+                out._backwards =[this, &other, out]()
+                {
+                    this->grad += other.value * out.grad;
+                    other.grad += this->value * out.grad;
+                };
                 return out;
             }
             Scalar operator*(double num)
@@ -94,8 +98,9 @@ namespace autodiff
                 };
                 buildTopo(this);
                 cout << "Topo Order: ";
-                for (Scalar* node : topo) {
+                for (Scalar* node : topo) {//should reverse order
                     std::cout << node << " ";
+                    // node->_backwards();
                 }
                 cout << std::endl;
             }
