@@ -2,6 +2,7 @@
 #include <cstring>
 #include <math.h>
 #include <functional>
+#include <unordered_set>
 
 using namespace std;
 
@@ -76,13 +77,27 @@ namespace autodiff
             }
 
 
-            void backward()
+            void Backward()
             {
                 // TODO - implement topo sort algo
-
+                vector<Scalar*> topo;
+                unordered_set<Scalar*> visited;
                 this->grad = 1;
-                // for (auto node : /*topoSortResult*/)//in reverse
-                //     node._backwards();
+                function<void(Scalar*)> buildTopo = [&](Scalar* v) {
+                    if (visited.find(v) == visited.end()) {
+                        visited.insert(v);
+                        for (Scalar* child : v->children) {
+                            buildTopo(child);
+                        }
+                        topo.push_back(v);
+                    }
+                };
+                buildTopo(this);
+                cout << "Topo Order: ";
+                for (Scalar* node : topo) {
+                    std::cout << node << " ";
+                }
+                cout << std::endl;
             }
 
             void Print()
