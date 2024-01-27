@@ -10,13 +10,8 @@ using namespace autodiff;
 int main() {
 	Scalar z(10);
 	Scalar y(5);
-	Scalar q=y * z * 5;
-	Scalar r = z+y;
+    Scalar zbarinkov(8);
+	Scalar q=y + z + zbarinkov;
+    q.Backward();
 
-
-	Scalar yy = z-y;
-
-	z.Print();
-	y.Print();
-	q.Print();
 }

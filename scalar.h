@@ -6,6 +6,10 @@
 
 using namespace std;
 
+//TODO : Fix topo sort nested children issue
+//TODO:  Add power and division
+//TODO:  call _backwards();
+
 namespace autodiff
 {
 
@@ -54,63 +58,69 @@ namespace autodiff
                 vector<Scalar*> set={this,p};
                 Scalar out((value * other.value), set, '*');
 
-                out._backwards =[this, &other, out]()
-                {
-                    this->grad += other.value * out.grad;
-                    other.grad += this->value * out.grad;
-                };
-                return out;
-            }
-            Scalar operator*(double num)
+            out._backwards =[this, &other, out]()
             {
-                return *this * Scalar(num);
-            }
-            friend Scalar operator*(double other, Scalar& obj) {
-                Scalar result(other * obj.value);
-                return result;
-            }
+                this->grad += other.value * out.grad;
+                other.grad += this->value * out.grad;
+            };
+            return out;
+        }
+        Scalar operator*(double num)
+        {
+            Scalar x(num);
+            return *this * x;
+        }
+        friend Scalar operator*(double other, Scalar& obj) {
+            Scalar result(other * obj.value);
+            return result;
+        }
 
-            Scalar operator-(){
-                return *this * Scalar(-1);
-            }
-            Scalar operator-(double num) {
-                return *this - Scalar(num);
-            }
-            Scalar operator-(Scalar& other) {
-                return (*this) + (-other);
-            }
-            friend Scalar operator-(double num, Scalar& obj) {
-                return Scalar(num) - obj;
-            }
+        Scalar operator-(){
+            Scalar x( -1 );
+            return *this * x;
+        }
+        Scalar operator-(double num) {
+            Scalar x(num);
+            return *this - x;
+        }
+        Scalar operator-(Scalar& other) {
+            Scalar x(-other);
+            return (*this) + x;
+        }
+        friend Scalar operator-(double num, Scalar& obj) {
+            return Scalar(num) - obj;
+        }
 
 
-            void Backward()
-            {
-                // TODO - implement topo sort algo
-                vector<Scalar*> topo;
-                unordered_set<Scalar*> visited;
-                this->grad = 1;
-                function<void(Scalar*)> buildTopo = [&](Scalar* v) {
-                    if (visited.find(v) == visited.end()) {
-                        visited.insert(v);
-                        for (Scalar* child : v->children) {
+        void Backward()
+        {
+            // TODO - implement topo sort algo
+            vector<Scalar*> topo;
+            unordered_set<Scalar*> visited;
+            this->grad = 1;
+            function<void(Scalar*)> buildTopo = [&](Scalar* v) {
+                if (visited.find(v) == visited.end()) {
+                    visited.insert(v);
+                    if (v != NULL) {
+                        for (Scalar *child: v->children) {
                             buildTopo(child);
                         }
-                        topo.push_back(v);
                     }
-                };
-                buildTopo(this);
-                cout << "Topo Order: ";
-                for (Scalar* node : topo) {//should reverse order
-                    std::cout << node << " ";
-                    // node->_backwards();
+                    topo.push_back(v);
                 }
-                cout << std::endl;
+            };
+            buildTopo(this);
+            cout << "Topo Order: ";
+            for (Scalar* node : topo) {//should reverse order
+                cout << node->value <<endl;
+                // node->_backwards();
             }
+            cout << std::endl;
+        }
 
-            void Print()
-            {
-                cout << "Deriv: " << grad << " Child 1 " << children[0] << " Child 2: " << children[1] << endl;
-            }
+        void Print()
+        {
+            cout << "Deriv: " << grad << " Child 1 " << children[0] << " Child 2: " << children[1] << endl;
+        }
     };
 }
