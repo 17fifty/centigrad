@@ -41,8 +41,8 @@ namespace autodiff
             Scalar operator+(double num) {
                 return *this + Scalar(num);
             }
-            friend Scalar operator+(double other, Scalar& obj) {
-                return Scalar(other)+ obj;
+            friend Scalar operator+(double num, Scalar& obj) {
+                return Scalar(num)+ obj;
             }
 
             Scalar operator*(Scalar &other)
@@ -63,20 +63,16 @@ namespace autodiff
             }
 
             Scalar operator-(){
-                Scalar result(-value);
-                return result;
+                return *this * Scalar(-1);
             }
             Scalar operator-(double num) {
-                Scalar result(value - num);
-                return result;
+                return *this - Scalar(num);
             }
             Scalar operator-(Scalar& other) {
-                Scalar result = (*this) + (-other);
-                return result;
+                return (*this) + (-other);
             }
             friend Scalar operator-(double num, Scalar& obj) {
-                Scalar result(num - obj.value);
-                return result;
+                return Scalar(num) - obj;
             }
 
 
