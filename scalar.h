@@ -38,6 +38,12 @@ namespace autodiff
                 };
                 return out;
             }
+            Scalar operator+(double num) {
+                return *this + Scalar(num);
+            }
+            friend Scalar operator+(double other, Scalar& obj) {
+                return Scalar(other)+ obj;
+            }
 
             Scalar operator*(Scalar &other)
             {
@@ -47,13 +53,11 @@ namespace autodiff
                 other.grad = value;
                 return out;
             }
-
-            Scalar operator*(double x)
+            Scalar operator*(double num)
             {
-                Scalar out(value * x);
-                return out;
+                return *this * Scalar(num);
             }
-            friend Scalar operator*(const double& other, const Scalar& obj) {
+            friend Scalar operator*(double other, Scalar& obj) {
                 Scalar result(other * obj.value);
                 return result;
             }
@@ -66,19 +70,23 @@ namespace autodiff
                 Scalar result(value - num);
                 return result;
             }
-            friend Scalar operator-(double num, const Scalar& obj) {
+            Scalar operator-(Scalar& other) {
+                Scalar result = (*this) + (-other);
+                return result;
+            }
+            friend Scalar operator-(double num, Scalar& obj) {
                 Scalar result(num - obj.value);
                 return result;
             }
 
 
-            void Backward()
+            void backward()
             {
                 // TODO - implement topo sort algo
 
                 this->grad = 1;
-                for (auto node : /*topoSortResult*/)//in reverse
-                    node._backwards();
+                // for (auto node : /*topoSortResult*/)//in reverse
+                //     node._backwards();
             }
 
             void Print()
