@@ -12,32 +12,23 @@ namespace autodiff
     {
     private:
         double value;
-        //fix this 
-        function<void()> _backwards;
         double grad;
-        Scalar child[2];
+        Scalar* children[2] = {};
         char op;
+        function<void()> _backwards;
 
     public:
-        Scalar(int x, double c1, double c2, char opr)
+        Scalar(double value, Scalar children[2] = {}, char op=' ')
         {
-            value = x;
-            child[0] = c1;
-            child[1] = c2;
-            op = opr;
-        }
-
-        Scalar(const Scalar &S)
-        {
-            value = S.value;
-            child[0] = S.child[0];
-            child[1] = S.child[1];
-            op = S.op;
+            this->value = value;
+            this->grad = 0;
+            *this->children = children;
+            this->op = op;
         }
 
         Scalar operator+(Scalar &other)
         {
-            Scalar out(value + other.value, value, other.value, '+');
+            Scalar out(this->value + other.value, value, other.value, '+');
             grad = 1;
             out._backwards =[this, &other, out]()
             {
@@ -95,7 +86,7 @@ namespace autodiff
 
         void Print()
         {
-            cout << "Deriv: " << grad << " Child 1 " << child[0] << " Child 2: " << child[1] << endl;
+            cout << "Deriv: " << grad << " Child 1 " << children[0] << " Child 2: " << children[1] << endl;
         }
     };
 }

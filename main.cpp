@@ -11,6 +11,7 @@ int main() {
 	Scalar z(10, 0, 0, 'L');
 	Scalar y(5, 0, 0, 'L');
 	Scalar q(y * z * 5);
+	Scalar r = z+y;
 	z.Print();
 	y.Print();
 	q.Print();
