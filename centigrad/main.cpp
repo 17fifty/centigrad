@@ -11,7 +11,8 @@ int main() {
 	Scalar z(10);
 	Scalar y(5);
     Scalar zbarinkov(8);
-	Scalar q=y + z + zbarinkov;
+	Scalar pp(2); 
+	Scalar q=y + z + zbarinkov + pp;
     q.Backward();
 
 }

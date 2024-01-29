@@ -12,7 +12,6 @@ using namespace std;
 
 namespace autodiff
 {
-
     class Scalar
     {
         private:
@@ -112,15 +111,16 @@ namespace autodiff
             buildTopo(this);
             cout << "Topo Order: ";
             for (Scalar* node : topo) {//should reverse order
-                cout << node->value <<endl;
-                // node->_backwards();
+                //doesnt work here !
+                //node->_backwards();
+                node->Print();
             }
             cout << std::endl;
         }
 
         void Print()
         {
-            cout << "Deriv: " << grad << " Child 1 " << children[0] << " Child 2: " << children[1] << endl;
+            cout << "Value:" << this->value << ", grad:" << this->grad << endl; 
         }
     };
 }
